@@ -29,10 +29,12 @@ def get_race_recap(race, marks):
     for leg in [leg1, leg2, leg3, leg4]:
         
         #print(get_small_man_stats(leg))
-        
-        race_recap = pd.concat([race_recap, get_recap_table_leg(leg)],ignore_index=True)
-        #race_recap.index = ['leg1','leg2','leg3','leg4']
-        race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
+        if len(leg)==0:
+            st.write("ca va pas marcher")
+        else :
+            race_recap = pd.concat([race_recap, get_recap_table_leg(leg)],ignore_index=True)
+            #race_recap.index = ['leg1','leg2','leg3','leg4']
+            race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
         
     return race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
 

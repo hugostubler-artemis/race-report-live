@@ -300,14 +300,14 @@ def get_man_summaryV2_(data, avg_window):
                                         exit_tws = exit_data.TWS.mean()
                                         tws = round((entry_tws + exit_tws) / 2, 1)
 
-
+                                        """
                                         # T90 : 
                                         t_90 = ((bigbuild_data['VMG']/bigbuild_data.Tgt_VMG).abs().rolling('1s').mean()>.9).astype(int).idxmax()
                                         if t_90>bigbuild_data.rolling('1s').mean().index[0]:
                                             t_90 = (get(t_90)-tman).total_seconds()
                                         if type(t_90)!=float :
                                             t_90 = np.nan
-                                        
+                                        """
                                         if entry_data.TWA.mean() > 0:
                                             tack_side = "stbd"
                                             tackside = 1
@@ -334,7 +334,7 @@ def get_man_summaryV2_(data, avg_window):
                                             "vmg_loss_target": vmg_loss_target,
                                             "vmg_loss_avg":vmg_loss_avg,
                                            
-                                            "t_90":t_90,
+                                            #"t_90":t_90,
                                             "man_id": man_id,
                                             
         

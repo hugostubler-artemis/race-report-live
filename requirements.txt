@@ -1,0 +1,12 @@
+pandas
+arrow
+astropy
+datetime
+geopy
+pytz
+streamlit
+influxdb_client
+reportlab
+PIL
+io
+plotly

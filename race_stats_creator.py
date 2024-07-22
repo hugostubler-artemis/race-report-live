@@ -42,7 +42,7 @@ def get_small_man_stats(df):
     if len(man)>0:
         if df.TWA.abs().mean()<90:
             tack = man[man.man_type=='tack']
-            target_tack = pd.read_csv('/Users/hugostubler/Documents/Artemis Racing/Barcelona/Targets/targets_tacks.csv')
+            target_tack = pd.read_csv('targets/targets_tacks.csv')
             for col in target_tack.columns:
                 p_tack = interpolation_p(target_tack.dropna()['Unnamed: 0'], target_tack.dropna()[col], 3)
                 tack[f'{col}'] = p_tack(tack.tws)
@@ -50,7 +50,7 @@ def get_small_man_stats(df):
             return len(tack), tack['DistanceMG%'].mean(), tack.vmg_loss_avg.mean()
         else :
             gybe = man[man.man_type=='gybe']
-            target_gybe = pd.read_csv('/Users/hugostubler/Documents/Artemis Racing/Barcelona/Targets/targets_gybes.csv')
+            target_gybe = pd.read_csv('targets/targets_gybes.csv')
             for col in target_gybe.columns:
                 p_tack = interpolation_p(target_gybe.dropna()['Unnamed: 0'], target_gybe.dropna()[col], 3)
                 gybe[f'{col}'] = p_tack(gybe.tws)

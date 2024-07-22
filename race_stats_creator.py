@@ -74,7 +74,7 @@ def get_recap_table_leg(leg):
     num_man, dmg, loss = get_small_man_stats(leg)
     for man in get_man_summaryV2(leg)[1:].Datetime :
         leg =  leg[(leg.Datetime<man-pd.Timedelta(seconds=5)) | (leg.Datetime>man+timedelta(seconds=25))]
-        st.write(len(leg))
+        
         st.write(leg)
     recap_table = pd.DataFrame()
     recap_table.loc[f'{leg_num}','VMG%'] = leg[leg['VMG%']>0]['VMG%'].mean()

@@ -77,14 +77,16 @@ def get_recap_table_leg(leg):
     if len(leg)==0:
         st.write("ca va pas marcher")
     else : 
+
+        
         recap_table = pd.DataFrame()
         recap_table.loc[f'{leg_num}','VMG%'] = leg[leg['VMG%']>0]['VMG%'].mean()
         recap_table.loc[f'{leg_num}','BSP%'] = leg[leg['VMG%']>0]['BSP%'].mean()
         recap_table.loc[f'{leg_num}','TWA'] = leg[leg['VMG%']>0]['TWA'].abs().mean()
-        recap_table.loc[f'{leg_num}','Heel stab'] = leg.set_index(leg.Datetime).rolling(10).std()['Heel'].mean()
-        recap_table.loc[f'{leg_num}','BSP stab'] = leg.set_index(leg.Datetime).rolling(10).std()['BSP'].mean()
-        recap_table.loc[f'{leg_num}','VMG stab'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime).rolling(10).std()['VMG'].mean()
-        recap_table.loc[f'{leg_num}','distance sailed (NM)'] = leg.set_index(leg.Datetime)['BSP'].sum()/(5*1854)
+        recap_table.loc[f'{leg_num}','Heel stab'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
+        recap_table.loc[f'{leg_num}','BSP stab'] = leg.rolling(10).std()['BSP'].mean()
+        recap_table.loc[f'{leg_num}','VMG stab'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
+        recap_table.loc[f'{leg_num}','distance sailed (NM)'] = leg['BSP'].sum()/(5*1854) #.set_index(leg.Datetime)
         leg['TWD_delta'] = np.where(leg.TWA>0,leg.TWD-leg.TWD.mean(),leg.TWD.mean()-leg.TWD)
         recap_table.loc[f'{leg_num}','Avg shift'] = leg['TWD_delta'].mean()
         recap_table.loc[f'{leg_num}','% sailing in phase'] = np.where(leg.TWA.abs().mean()<90, len(leg[leg['TWD_delta']>0])/len(leg)*100,100-len(leg[leg['TWD_delta']>0])/len(leg)*100)

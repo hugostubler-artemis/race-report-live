@@ -83,7 +83,7 @@ def get_recap_table_leg(leg):
         recap_table.loc[f'{leg_num}','VMG%'] = leg[leg['VMG%']>0]['VMG%'].mean()
         recap_table.loc[f'{leg_num}','BSP%'] = leg[leg['VMG%']>0]['BSP%'].mean()
         recap_table.loc[f'{leg_num}','TWA'] = leg[leg['VMG%']>0]['TWA'].abs().mean()
-        st.write(leg.Heel)
+        # st.write(leg.Heel)
         recap_table.loc[f'{leg_num}','Heel stab'] = 0#leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
         recap_table.loc[f'{leg_num}','BSP stab'] = 0#leg.rolling(10).std()['BSP'].mean()
         recap_table.loc[f'{leg_num}','VMG stab'] = 0#leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()

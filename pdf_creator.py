@@ -173,7 +173,7 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
-    st.write(type(leg1)
+    #st.write(type(leg1)
     r = get_race_recap(race, marks).style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
     
     #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)

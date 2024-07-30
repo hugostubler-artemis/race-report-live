@@ -23,9 +23,27 @@ def update_timestamp(index):
     st.session_state[f'timestamp{index}'] = datetime.now()
     st.write(f"Timestamp {index}: {st.session_state[f'timestamp{index}']}")
 
+def update_timestamp_text(index):
+    # Get current UTC time
+    utc_now = datetime.utcnow()
+    
+    # Convert to local time (UTC-2)
+    local_time = utc_now - timedelta(hours=2)
+    
+    # Format the time as "HH:MM"
+    formatted_time = local_time.strftime("%H:%M")
+    
+    # Update session state with the formatted time
+    st.session_state[f'timestamp{index}'] = formatted_time
+    
+    # Write the formatted time to the Streamlit app
+    st.write(f"Timestamp {index}: {formatted_time}")
+
 # Buttons to update timestamps
-if st.button('Start time'):
-    update_timestamp(1)
+if st.text_input("Start time"):
+    update_timestamp_text(1)
+#if st.button('Start time'):
+#   update_timestamp_text(1)
 
 if st.button('Top gate 1'):
     update_timestamp(2)

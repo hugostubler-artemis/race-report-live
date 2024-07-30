@@ -10,6 +10,12 @@ import mysql.connector
 import streamlit as st
 
 
+MYSQL_HOST = "sailing-performance.artemisracing.com"
+MYSQL_PORT = 3306
+MYSQL_USR = "admin"
+MYSQL_PWD = "Vh&bxj07oiFNFP;Jg+BZ"
+MYSQL_SCHEMA = "ac40"
+
 def get_legs(race, marks):
     race_marks = marks[(marks.time>race.Datetime.min()) & (marks.time<race.Datetime.max())]
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
@@ -26,7 +32,9 @@ def get_legs(race, marks):
 
 def get_race_recap(race, marks):
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
-    
+    rc, pin = fetch_latest_marks()
+    dist_to_line = closest_distance_to_line(rc[0], rc[1], pin[0], pin[1], leg1.iloc[0].gpsLat, leg1.iloc[0].gpsLon)
+    speed_start = leg1.iloc[0]['BSP%']
     race_recap = pd.DataFrame()
     for leg in [leg1, leg2, leg3, leg4]:
         
@@ -37,7 +45,8 @@ def get_race_recap(race, marks):
             race_recap = pd.concat([race_recap, get_recap_table_leg(leg)],ignore_index=True)
             #race_recap.index = ['leg1','leg2','leg3','leg4']
             race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
-        
+    race_recap['dist_to_line'] = dist_to_line
+    race_recap['speed_start'] = speed_start
     return race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
 
 def get_small_man_stats(df):
@@ -69,54 +78,6 @@ def interpolation_p(x, y, degree):
     return poly_function
 
 
-"""
-def fetch_latest_marks():
-    try:
-        conn = mysql.connector.connect(
-            host=MYSQL_HOST,
-            port=MYSQL_PORT,
-            user=MYSQL_USR,
-            password=MYSQL_PWD,
-            database=MYSQL_SCHEMA
-        )
-        cursor = conn.cursor()
-        query = """
-        SELECT `type`, `latitude`, `longitude`
-        FROM `coursemarks`
-        WHERE `type` IN ('RC', 'PIN')
-        ORDER BY `dropTimeUtc` DESC
-        """
-        cursor.execute(query)
-        result = cursor.fetchall()
-        
-        # Initialize coordinates for 'RC' and 'PIN'
-        rc = None
-        pin = None
-        
-        # Extract the latest 'RC' and 'PIN' marks
-        for row in result:
-            mark_type = row[0]
-            latitude = row[1]
-            longitude = row[2]
-            
-            if mark_type == 'RC' and rc is None:
-                rc = [latitude, longitude]
-            elif mark_type == 'PIN' and pin is None:
-                pin = [latitude, longitude]
-            
-            # Stop once both 'RC' and 'PIN' are found
-            if rc and pin:
-                break
-        
-        return rc, pin
-    except mysql.connector.Error as err:
-        st.error(f"Error: {err}")
-        return None, None
-    finally:
-        if conn.is_connected():
-            cursor.close()
-            conn.close()
-"""
 
 def get_recap_table_leg(leg):
     leg_num = 'leg1'
@@ -236,6 +197,33 @@ def closest_distance_to_line(lat1, lon1, lat2, lon2, boat_lat, boat_lon):
 
     return haversine_distance(closest_point[0], closest_point[1], boat_lat, boat_lon)
 
+def fetch_latest_marks():
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            user=MYSQL_USR,
+            password=MYSQL_PWD,
+            database=MYSQL_SCHEMA
+        )
+        cursor = conn.cursor()
+        query = """
+        SELECT `type`, `latitude`, `longitude`, `dropTimeUtc`
+        FROM `coursemarks`
+        ORDER BY `dropTimeUtc` DESC
+        LIMIT 8
+        """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        marks = {row[0]: [row[1], row[2]] for row in result}
+        return marks
+    except mysql.connector.Error as err:
+        st.error(f"Error: {err}")
+        return None
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
         
 def get_man_summaryV2_(data, avg_window):
     # avg_window =5

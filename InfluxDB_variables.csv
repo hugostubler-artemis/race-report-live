@@ -4,6 +4,7 @@ IsUsed,VarName,Type
 1,COG,angle360
 1,BSP,number
 1,Tgt_BSP,number
+1,Tgt_VMG,number
 1,SOG,number
 1,TWA,angle180
 1,TWD,angle360

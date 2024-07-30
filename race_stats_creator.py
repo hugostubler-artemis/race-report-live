@@ -6,6 +6,8 @@ import os
 from datetime import datetime, timedelta
 from geopy import distance
 import math
+import mysql.connector
+import streamlit as st
 
 
 def get_legs(race, marks):
@@ -67,6 +69,55 @@ def interpolation_p(x, y, degree):
     return poly_function
 
 
+"""
+def fetch_latest_marks():
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            user=MYSQL_USR,
+            password=MYSQL_PWD,
+            database=MYSQL_SCHEMA
+        )
+        cursor = conn.cursor()
+        query = """
+        SELECT `type`, `latitude`, `longitude`
+        FROM `coursemarks`
+        WHERE `type` IN ('RC', 'PIN')
+        ORDER BY `dropTimeUtc` DESC
+        """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        
+        # Initialize coordinates for 'RC' and 'PIN'
+        rc = None
+        pin = None
+        
+        # Extract the latest 'RC' and 'PIN' marks
+        for row in result:
+            mark_type = row[0]
+            latitude = row[1]
+            longitude = row[2]
+            
+            if mark_type == 'RC' and rc is None:
+                rc = [latitude, longitude]
+            elif mark_type == 'PIN' and pin is None:
+                pin = [latitude, longitude]
+            
+            # Stop once both 'RC' and 'PIN' are found
+            if rc and pin:
+                break
+        
+        return rc, pin
+    except mysql.connector.Error as err:
+        st.error(f"Error: {err}")
+        return None, None
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+"""
+
 def get_recap_table_leg(leg):
     leg_num = 'leg1'
     i=1
@@ -84,9 +135,9 @@ def get_recap_table_leg(leg):
         recap_table.loc[f'{leg_num}','BSP%'] = leg[leg['VMG%']>0]['BSP%'].mean()
         recap_table.loc[f'{leg_num}','TWA'] = leg[leg['VMG%']>0]['TWA'].abs().mean()
         # st.write(leg.Heel)
-        recap_table.loc[f'{leg_num}','Heel stab'] = 0#leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
-        recap_table.loc[f'{leg_num}','BSP stab'] = 0#leg.rolling(10).std()['BSP'].mean()
-        recap_table.loc[f'{leg_num}','VMG stab'] = 0#leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
+        recap_table.loc[f'{leg_num}','Heel stab'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
+        recap_table.loc[f'{leg_num}','BSP stab'] = leg.rolling(10).std()['BSP'].mean()
+        recap_table.loc[f'{leg_num}','VMG stab'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
         recap_table.loc[f'{leg_num}','distance sailed (NM)'] = leg['BSP'].sum()/(5*1854) #.set_index(leg.Datetime)
         leg['TWD_delta'] = np.where(leg.TWA>0,leg.TWD-leg.TWD.mean(),leg.TWD.mean()-leg.TWD)
         recap_table.loc[f'{leg_num}','Avg shift'] = leg['TWD_delta'].mean()
@@ -142,7 +193,49 @@ def mean_bearing(bearing1, bearing2):
      #   return 180 - mean_bearing_de
         
         
-        
+
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculate the great circle distance in meters between two points on the earth specified in decimal degrees."""
+    # Convert decimal degrees to radians 
+    lat1, lon1, lat2, lon2 = map(np.radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
+    c = 2 * np.arcsin(np.sqrt(a)) 
+    r = 6371000  # Radius of earth in meters
+    return c * r
+
+def closest_distance_to_line(lat1, lon1, lat2, lon2, boat_lat, boat_lon):
+    """Calculate the minimum distance from the boat to the line segment defined by two GPS points."""
+    # Calculate distances between the points
+    A = np.array([lat1, lon1])
+    B = np.array([lat2, lon2])
+    P = np.array([boat_lat, boat_lon])
+
+    AB = B - A
+    AP = P - A
+    BP = P - B
+
+    AB_AB = np.dot(AB, AB)
+    if AB_AB == 0:
+        # The line segment is actually a point
+        return haversine_distance(lat1, lon1, boat_lat, boat_lon)
+    
+    AB_AP = np.dot(AP, AB)
+    t = AB_AP / AB_AB
+
+    if t < 0:
+        closest_point = A
+    elif t > 1:
+        closest_point = B
+    else:
+        closest_point = A + t * AB
+
+    return haversine_distance(closest_point[0], closest_point[1], boat_lat, boat_lon)
+
         
 def get_man_summaryV2_(data, avg_window):
     # avg_window =5

@@ -5,12 +5,15 @@ from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 import dataframe_image as dfi
+from dataframe_image.converter import ChromeConverter 
 from datetime import datetime
 from race_stats_creator import get_race_recap, get_legs
 import plotly.express as px
 # from reportlab.platypus import SimpleDocTemplate, Paragraph, PageBreak, Table, Image
 from PIL import Image
 from io import BytesIO
+import matplotlib.pyplot as plt
+
 import os
 
 
@@ -119,11 +122,12 @@ def create_leg_pngs(leg, name):
     center_lat = leg['Latitude'].mean()
     center_lon = leg['Longitude'].mean()
     custom_color_scale = [
-        (0.0, "blue"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max
-        (0.6, "green"),   # 22k is approximately 40% of the way to the max
-        (.7, "yellow"),  # 26k is approximately 60% of the way to the max
-        (.8, "orange"),
-        (1, "red") # 30k is approximately 80% of the way to the m     # 38k and above -> red
+        (0.0, "black"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max
+        (0.5, "red"),   # 22k is approximately 40% of the way to the max
+        (.6, "orange"),  # 26k is approximately 60% of the way to the max
+        (.8, "yellow"),
+        (.9, "green"),
+        (1, "green")# 30k is approximately 80% of the way to the m     # 38k and above -> red
     ]
 
     # Create the scatter mapbox plot
@@ -158,6 +162,50 @@ def create_leg_pngs(leg, name):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     fig.write_image(f"png_race/track_plot_tactic_{name}.png")
 
+def color_cells_perc(val):
+    color = 'white'
+    if isinstance(val, (int, float)):
+        if val < 90:
+            color = 'lightcoral'
+        elif val < 95:
+            color = 'lightyellow'
+        else:
+            color = 'lightgreen'
+    return f'background-color: {color}'
+
+def color_cells_twa(val):
+    color = 'white'
+    if isinstance(val, (int, float)):
+        if val > 51 or val < 125 :
+            color = 'lightcoral'
+        elif val > 47 or val < 135:
+            color = 'lightyellow'
+        else:
+            color = 'lightgreen'
+    return f'background-color: {color}'
+
+def color_cells_shift(val):
+    color = 'white'
+    if isinstance(val, (int, float)):
+        if val < 0 :
+            color = 'lightcoral'
+        elif val ==0 :
+            color = 'lightyellow'
+        else:
+            color = 'lightgreen'
+    return f'background-color: {color}'
+
+def color_cells(val):
+    color = 'white'
+    if isinstance(val, (int, float)):
+        if val < 10 :
+            color = 'lightcoral'
+        elif val < 25 :
+            color = 'lightyellow'
+        else:
+            color = 'lightgreen'
+    return f'background-color: {color}'
+
 
 def create_legs_track_png_leg(race, marks):
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
@@ -174,22 +222,72 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
     #st.write(type(leg1)
-    r = get_race_recap(race, marks).style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
+    r = get_race_recap(race, marks).round(2) # .style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
     
-    #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
-    dfi.export(r, 'png_race/main.png')
+    fig, ax = plt.subplots(figsize=(10, 1.4))  # Adjust the size as needed
+
+    # Hide the axes
+    ax.axis('tight')
+    ax.axis('off')
+    
+    # Create a table with taller column headers
+    table = ax.table(cellText=r.values, colLabels=r.columns, cellLoc='center', loc='center')
+    
+    # Adjust the font size and scale of the table
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1.1, 1.1)
+    
+    # Make the column headers taller for multiline text
+    for key, cell in table.get_celld().items():
+        if key[0] == 0:  # This is the header row
+            cell.set_height(0.8)  # Adjust the height of the header row
+            cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
+    
+    # Adjust layout
+    plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+    
+    # Color the cells based on their values
+    for i in r.index: #range(len(r)):
+        for col in ['VMG%', 'BSP%', 'DMG%']:
+            value = r.loc[i, col]
+            color = color_cells_perc(value).split(': ')[1]
+            table[i+1, j].set_facecolor(color)
+
+    for i in r.index: #range(len(r)):
+        for col in ['TWA']:
+            value = r.loc[i, col]
+            color = color_cells_twa(value).split(': ')[1]
+            table[i+1, j].set_facecolor(color)
+
+
+    for i in r.index: #range(len(r)):
+        for col in ['Avg shift']:
+            value = r.loc[i, col]
+            color = color_cells_shift(value).split(': ')[1]
+            table[i+1, j].set_facecolor(color)
+
+    for i in r.index:# range(len(r)):
+        for col in r.columns:
+            if col not in ['VMG%', 'BSP%', 'DMG%', 'TWA','Avg shift']:
+                value = r.loc[i, col]
+                color = color_cells(value).split(': ')[1]
+                table[i+1, j].set_facecolor(color)
+            #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
+            
+
+    fig.savefig('png_race/main.png')
+    # Convert the DataFrame to an image and save it to the output file
+    #dfi.export(r, output_file, format='png', scale=2)
+    #dfi.export(r, 'png_race/main.png')
     # img = Image.open("png_race/track_plot_vmg_leg1.png")
     # img.save("png_race/track_plot_vmg_leg1_bis.png")
     create_legs_track_png_leg(race, marks)
     title = f"{name} recap"
     
     images = ["png_race/main.png", "png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
-               "png_race/track_plot_vmg_2.png", "png_race/track_plot_tactic_leg2.png",
+               "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
                "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
                "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png", ]
-    """images = ["png_race/main.png", "track_plot_vmg_leg1.png", "track_plot_tactic_leg1.png", 
-               "track_plot_vmg_2.png", "track_plot_tactic_leg2.png",
-               "track_plot_vmg_leg3.png", "track_plot_tactic_leg3.png", 
-               "track_plot_vmg_leg4.png", "track_plot_tactic_leg4.png", ]
-               """
+   
     return create_pdf(title, images, pdf_buffer)

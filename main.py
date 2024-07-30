@@ -75,7 +75,7 @@ if st.button('Finish line'):
                                        toTime=datetime.strptime(
                                            f"{date} {toTime_}", "%Y-%m-%d %H:%M:%S"),
                                        freq="1s", whereTags=whereTags_)
-            st.write(len(race))
+            # st.write(len(race))
             file_path = pdf_race_recap_creator(race, marks,'race2 stats')
 
             title = "test_pdf"

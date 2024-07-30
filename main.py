@@ -2,9 +2,11 @@ import streamlit as st
 from influx_loader import QueryInfluxData, INFLUXDB_BUCKET_RT
 from pdf_creator import pdf_race_recap_creator, create_pdf
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from io import BytesIO
+import pytz
+
 
 varMapping = pd.read_csv('InfluxDB_variables.csv')
 
@@ -23,27 +25,19 @@ def update_timestamp(index):
     st.session_state[f'timestamp{index}'] = datetime.now()
     st.write(f"Timestamp {index}: {st.session_state[f'timestamp{index}']}")
 
-def update_timestamp_text(index):
-    # Get current UTC time
-    utc_now = datetime.utcnow()
-    
-    # Convert to local time (UTC-2)
-    local_time = utc_now - timedelta(hours=2)
-    
-    # Format the time as "HH:MM"
-    formatted_time = local_time.strftime("%H:%M")
-    
-    # Update session state with the formatted time
-    st.session_state[f'timestamp{index}'] = formatted_time
-    
-    # Write the formatted time to the Streamlit app
-    st.write(f"Timestamp {index}: {formatted_time}")
 
 # Buttons to update timestamps
-if st.text_input("Start time"):
-    update_timestamp_text(1)
-#if st.button('Start time'):
-#   update_timestamp_text(1)
+t = st.text_input("Start time, format 14:30")
+if t: 
+    try:
+        index=1
+        timing = datetime.now()
+        h_m = [int(coord) for coord in t.split(':')]
+        new_datetime = datetime(timing.year, timing.month, timing.day, h_m[0], h_m[1], 0, tzinfo=pytz.utc)
+        st.session_state[f'timestamp{index}'] = new_datetime
+        st.write(f"Timestamp {index}: {st.session_state[f'timestamp{index}']}")
+    except ValueError:
+            st.error("Please enter the time in the correct format (HH:MM).")
 
 if st.button('Top gate 1'):
     update_timestamp(2)
@@ -74,6 +68,12 @@ if st.button('Finish line'):
 
     
     if st.session_state['timestamp1'] and st.session_state['timestamp2'] and st.session_state['timestamp3'] and st.session_state['timestamp4'] and st.session_state['timestamp5']:
+            
+            st.session_state['timestamp1'] = (st.session_state['timestamp1'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp2'] = (st.session_state['timestamp2'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp3'] = (st.session_state['timestamp3'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp4'] = (st.session_state['timestamp4'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp5'] = (st.session_state['timestamp5'] - timedelta(hours=2)).replace(tzinfo=None)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
             fromTime_: str = st.session_state['timestamp1'].strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')
@@ -81,6 +81,7 @@ if st.button('Finish line'):
             # Convert timestamps to string format required by InfluxDB
             start_time = st.session_state['timestamp1'].isoformat() + "Z"
             end_time = st.session_state['timestamp5'].isoformat() + "Z"
+            
             race = QueryInfluxData(INFLUXDB_BUCKET_RT, varMapping,
                                        fromTime=datetime.strptime(
                                            f"{date} {fromTime_}", "%Y-%m-%d %H:%M:%S"),

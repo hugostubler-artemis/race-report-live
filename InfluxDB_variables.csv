@@ -3,6 +3,7 @@ IsUsed,VarName,Type
 1,gpsLon,gps
 1,COG,angle360
 1,BSP,number
+1,VMG,number
 1,Tgt_BSP,number
 1,Tgt_VMG,number
 1,SOG,number

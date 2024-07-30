@@ -98,8 +98,10 @@ def QueryInfluxData(
         for table in tables:
             for record in table.records:
                 records.append((record.get_time(), record.get_value()))
+                
         df_tmp = pd.DataFrame(records, columns=['_time', var])
         df_tmp['_time'] = pd.to_datetime(df_tmp['_time'])
+        df_tmp['_time'] = df_tmp['_time'].dt.tz_localize(None)
         df_tmp.set_index('_time', inplace=True)
 
         # Merge the current DataFrame with the combined DataFrame

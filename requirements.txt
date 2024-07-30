@@ -12,3 +12,4 @@ plotly
 matplotlib
 dataframe_image
 matplotlib
+mysql-connector-python

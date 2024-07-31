@@ -34,13 +34,52 @@ def get_legs(race, marks):
     leg4['TWD_delta'] = np.where(leg4.TWA>0,leg4.TWD-leg4.TWD.mean(),leg4.TWD.mean()-leg4.TWD)
     return leg1, leg2, leg3, leg4
 
+def cross_product_sign(lat1, lon1, lat2, lon2, boat_lat, boat_lon):
+    """
+    Calculate the cross product of the vector from (lat1, lon1) to (lat2, lon2) 
+    and the vector from (lat1, lon1) to (boat_lat, boat_lon).
+    """
+    return (lat2 - lat1) * (boat_lon - lon1) - (lon2 - lon1) * (boat_lat - lat1)
 
-def get_race_recap(race, marks):
-    leg1, leg2, leg3, leg4 = get_legs(race, marks)
+def find_crossing_time(df, lat1, lon1, lat2, lon2):
+    """
+    Find the timestamp when the boat crosses the line defined by (lat1, lon1) and (lat2, lon2).
+    df: DataFrame containing 'datetime', 'Latitude', 'Longitude' columns.
+    """
+    prev_side = None
+    crossing_time = None
+
+    for i, row in df.iterrows():
+        boat_lat = row['gpsLatitude']
+        boat_lon = row['gpsLon']
+        timestamp = row['Datetime']
+        
+        # Determine the current side of the boat relative to the line
+        current_side = np.sign(cross_product_sign(lat1, lon1, lat2, lon2, boat_lat, boat_lon))
+
+        # If previous side is not None and there is a change in side, crossing has occurred
+        if prev_side is not None and prev_side != current_side and current_side != 0:
+            crossing_time = timestamp
+            break
+
+        prev_side = current_side
+
+    return crossing_time
+    
+def get_start_recap(race):
     start_ = fetch_latest_marks()
     rc, pin = start_['RC'], start_['PIN']
     dist_to_line = closest_distance_to_line(rc[0], rc[1], pin[0], pin[1], leg1.iloc[0].gpsLat, leg1.iloc[0].gpsLon)
     speed_start = leg1.iloc[0]['BSP%']
+    race_recap['DTL'] = dist_to_line
+    race_recap['BSP_start'] = speed_start
+    race_recap['TTC'] = find_crossing_time(df, lat1, lon1, lat2, lon2)
+    return race_recap
+
+
+def get_race_recap(race, marks):
+    leg1, leg2, leg3, leg4 = get_legs(race, marks)
+    
     race_recap = pd.DataFrame()
     for leg in [leg1, leg2, leg3, leg4]:
         
@@ -51,8 +90,7 @@ def get_race_recap(race, marks):
             race_recap = pd.concat([race_recap, get_recap_table_leg(leg)],ignore_index=True)
             #race_recap.index = ['leg1','leg2','leg3','leg4']
             race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
-    race_recap['dist_to_line'] = dist_to_line
-    race_recap['speed_start'] = speed_start
+    
     return race_recap.rename(index={0: 'leg1', 1: 'leg2', 2: 'leg3', 3: 'leg4'})
 
 def get_small_man_stats(df):
@@ -102,16 +140,16 @@ def get_recap_table_leg(leg):
         recap_table.loc[f'{leg_num}','BSP%'] = leg['BSP%'].mean()
         recap_table.loc[f'{leg_num}','TWA'] = leg['TWA'].abs().mean()
         # st.write(leg.Heel)
-        recap_table.loc[f'{leg_num}','Heel stab'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
-        recap_table.loc[f'{leg_num}','BSP stab'] = leg.rolling(10).std()['BSP'].mean()
-        recap_table.loc[f'{leg_num}','VMG stab'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
-        recap_table.loc[f'{leg_num}','distance sailed (NM)'] = leg['BSP'].sum()/(5*1854) #.set_index(leg.Datetime)
+        recap_table.loc[f'{leg_num}','devHeel'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
+        recap_table.loc[f'{leg_num}','devBSP'] = leg.rolling(10).std()['BSP'].mean()
+        recap_table.loc[f'{leg_num}','devVMG'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
+        recap_table.loc[f'{leg_num}','dist_sailed'] = leg['BSP'].sum()/(5*1854) #.set_index(leg.Datetime)
         leg['TWD_delta'] = np.where(leg.TWA>0,leg.TWD-leg.TWD.mean(),leg.TWD.mean()-leg.TWD)
-        recap_table.loc[f'{leg_num}','Avg shift'] = leg['TWD_delta'].mean()
-        recap_table.loc[f'{leg_num}','% sailing in phase'] = np.where(leg.TWA.abs().mean()<90, len(leg[leg['TWD_delta']>0])/len(leg)*100,100-len(leg[leg['TWD_delta']>0])/len(leg)*100)
-        recap_table.loc[f'{leg_num}','num of man'] = num_man
+        recap_table.loc[f'{leg_num}','Shift'] = leg['TWD_delta'].mean()
+        recap_table.loc[f'{leg_num}','%InPhase'] = np.where(leg.TWA.abs().mean()<90, len(leg[leg['TWD_delta']>0])/len(leg)*100,100-len(leg[leg['TWD_delta']>0])/len(leg)*100)
+        recap_table.loc[f'{leg_num}','#man'] = num_man
         recap_table.loc[f'{leg_num}','DMG%'] = dmg
-        recap_table.loc[f'{leg_num}','avg Distance loss'] = loss
+        recap_table.loc[f'{leg_num}','DistLoss'] = loss
     return recap_table
 
 def get_man_summaryV2(data):

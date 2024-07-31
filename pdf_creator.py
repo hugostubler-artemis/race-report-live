@@ -248,32 +248,62 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
     
     # Color the cells based on their values
+    """
     for i in r.index: #range(len(r)):
         for col in ['VMG%', 'BSP%', 'DMG%']:
             value = r.loc[i, col]
             color = color_cells_perc(value).split(': ')[1]
             table[i+1, j].set_facecolor(color)
+        """
+    for i in r.index : #range(len(r)):
+        k=0
+        j = 0  # Assuming we start with the first column for each row
+        for col in ['VMG%', 'BSP%', 'DMG%']:
+            value = r.loc[i, col]
+            # Extract color string for the cell
+            color = color_cells_perc(value).split(': ')[1]
+           
+            # Set the face color of the cell in the `table`
+            
+            table[k+1, j].set_facecolor(color)
+            j += 1  # Move to the next column
+            k+=1
 
     for i in r.index: #range(len(r)):
+        k=0
+        j = 0
         for col in ['TWA']:
             value = r.loc[i, col]
             color = color_cells_twa(value).split(': ')[1]
-            table[i+1, j].set_facecolor(color)
-
+            table[k+1, j].set_facecolor(color)
+            j += 1  # Move to the next column
+            k+=1
 
     for i in r.index: #range(len(r)):
+        k=0
+        j = 0
         for col in ['Avg shift']:
             value = r.loc[i, col]
             color = color_cells_shift(value).split(': ')[1]
-            table[i+1, j].set_facecolor(color)
-
-    for i in r.index:# range(len(r)):
+            table[k+1, j].set_facecolor(color)
+            j += 1  # Move to the next column
+            k+=1
+    for i in r.index:
+        k=1  # Iterate over the DataFrame rows
+        j = 0  # Reset column index for each new row
         for col in r.columns:
-            if col not in ['VMG%', 'BSP%', 'DMG%', 'TWA','Avg shift']:
+            if col not in ['VMG%', 'BSP%', 'DMG%', 'TWA', 'Avg shift']:
                 value = r.loc[i, col]
                 color = color_cells(value).split(': ')[1]
-                table[i+1, j].set_facecolor(color)
-            #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
+                
+                # Check if the cell (i, j) exists in the table
+                if (k, j) in table._cells:
+                    table[k, j].set_facecolor(color)
+                else:
+                    st.write(f"Cell ({k}, {j}) does not exist in the table.")
+                
+                j += 1  # Move to the next column
+                #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
             
 
     fig.savefig('png_race/main.png')

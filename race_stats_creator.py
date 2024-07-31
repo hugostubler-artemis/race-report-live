@@ -18,6 +18,11 @@ MYSQL_SCHEMA = "ac40"
 
 def get_legs(race, marks):
     race_marks = marks[(marks.time>race.Datetime.min()) & (marks.time<race.Datetime.max())]
+    st.write(marks)
+    st.write('time 1',race.Datetime.min())
+    st.write('time 2',race.Datetime.max())
+    #st.write(len(race_marks))
+    #st.write("time 2",race_marks.iloc[0].time)
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
     leg2 = race[(race.Datetime<race_marks.iloc[1].time) & (race.Datetime>race_marks.iloc[0].time)]
     leg3 = race[(race.Datetime<race_marks.iloc[2].time) & (race.Datetime>race_marks.iloc[1].time)]
@@ -32,7 +37,8 @@ def get_legs(race, marks):
 
 def get_race_recap(race, marks):
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
-    rc, pin = fetch_latest_marks()
+    start_ = fetch_latest_marks()
+    rc, pin = start_['RC'], start_['PIN']
     dist_to_line = closest_distance_to_line(rc[0], rc[1], pin[0], pin[1], leg1.iloc[0].gpsLat, leg1.iloc[0].gpsLon)
     speed_start = leg1.iloc[0]['BSP%']
     race_recap = pd.DataFrame()
@@ -92,9 +98,9 @@ def get_recap_table_leg(leg):
 
         
         recap_table = pd.DataFrame()
-        recap_table.loc[f'{leg_num}','VMG%'] = leg[leg['VMG%']>0]['VMG%'].mean()
-        recap_table.loc[f'{leg_num}','BSP%'] = leg[leg['VMG%']>0]['BSP%'].mean()
-        recap_table.loc[f'{leg_num}','TWA'] = leg[leg['VMG%']>0]['TWA'].abs().mean()
+        recap_table.loc[f'{leg_num}','VMG%'] = leg['VMG%'].mean() #[leg['VMG%']>0]
+        recap_table.loc[f'{leg_num}','BSP%'] = leg['BSP%'].mean()
+        recap_table.loc[f'{leg_num}','TWA'] = leg['TWA'].abs().mean()
         # st.write(leg.Heel)
         recap_table.loc[f'{leg_num}','Heel stab'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
         recap_table.loc[f'{leg_num}','BSP stab'] = leg.rolling(10).std()['BSP'].mean()

@@ -52,28 +52,29 @@ if st.button('Finish line'):
     update_timestamp(5)
 
 
-    #st.session_state['timestamp1'] = datetime.strptime('2024-07-19 09:40:00', '%Y-%m-%d %H:%M:%S')
-    #st.session_state['timestamp2'] = datetime.strptime('2024-07-19 09:45:09', '%Y-%m-%d %H:%M:%S')
-    #st.session_state['timestamp3'] =  datetime.strptime('2024-07-19 09:47:56', '%Y-%m-%d %H:%M:%S')
-    #st.session_state['timestamp4'] =  datetime.strptime('2024-07-19 09:52:42', '%Y-%m-%d %H:%M:%S')
-    #st.session_state['timestamp5'] =  datetime.strptime('2024-07-19 09:56:37', '%Y-%m-%d %H:%M:%S')
-    marks = pd.DataFrame(columns=['time'])
+    st.session_state['timestamp1'] = datetime.strptime('2024-07-19 11:40:00', '%Y-%m-%d %H:%M:%S')
+    st.session_state['timestamp2'] = datetime.strptime('2024-07-19 11:45:09', '%Y-%m-%d %H:%M:%S')
+    st.session_state['timestamp3'] =  datetime.strptime('2024-07-19 11:47:56', '%Y-%m-%d %H:%M:%S')
+    st.session_state['timestamp4'] =  datetime.strptime('2024-07-19 11:52:42', '%Y-%m-%d %H:%M:%S')
+    st.session_state['timestamp5'] =  datetime.strptime('2024-07-19 11:56:37', '%Y-%m-%d %H:%M:%S')
     
-
-    marks.loc[0, 'time'] = st.session_state['timestamp2']
-    marks.loc[1, 'time'] = st.session_state['timestamp3']
-    marks.loc[2, 'time'] = st.session_state['timestamp4']
-
-    st.write(marks)
 
     
     if st.session_state['timestamp1'] and st.session_state['timestamp2'] and st.session_state['timestamp3'] and st.session_state['timestamp4'] and st.session_state['timestamp5']:
             
             st.session_state['timestamp1'] = (st.session_state['timestamp1'] - timedelta(hours=2)).replace(tzinfo=None)
-            #st.session_state['timestamp2'] = (st.session_state['timestamp2'] - timedelta(hours=2)).replace(tzinfo=None)
-            #st.session_state['timestamp3'] = (st.session_state['timestamp3'] - timedelta(hours=2)).replace(tzinfo=None)
-            #st.session_state['timestamp4'] = (st.session_state['timestamp4'] - timedelta(hours=2)).replace(tzinfo=None)
-            #st.session_state['timestamp5'] = (st.session_state['timestamp5'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp2'] = (st.session_state['timestamp2'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp3'] = (st.session_state['timestamp3'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp4'] = (st.session_state['timestamp4'] - timedelta(hours=2)).replace(tzinfo=None)
+            st.session_state['timestamp5'] = (st.session_state['timestamp5'] - timedelta(hours=2)).replace(tzinfo=None)
+            marks = pd.DataFrame(columns=['time'])
+    
+
+            marks.loc[0, 'time'] = st.session_state['timestamp2']
+            marks.loc[1, 'time'] = st.session_state['timestamp3']
+            marks.loc[2, 'time'] = st.session_state['timestamp4']
+
+            st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
             fromTime_: str = st.session_state['timestamp1'].strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')

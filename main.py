@@ -1,6 +1,6 @@
 import streamlit as st 
 from influx_loader import QueryInfluxData, INFLUXDB_BUCKET_RT
-from pdf_creator import pdf_race_recap_creator, create_pdf
+from pdf_creator_bis import pdf_race_recap_creator, create_pdf
 import os
 from datetime import datetime, timedelta
 import pandas as pd

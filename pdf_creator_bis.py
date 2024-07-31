@@ -143,7 +143,7 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     # Make the column headers taller for multiline text
     for key, cell in table.get_celld().items():
         if key[0] == 0:  # Header row
-            cell.set_height(0.8)
+            cell.set_height(0.4)
             cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
     
     # Alternating row colors for better readability

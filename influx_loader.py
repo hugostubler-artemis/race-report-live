@@ -111,10 +111,10 @@ def QueryInfluxData(
             df = df.join(df_tmp, how='outer')
 
     df.index = df.index.strftime('%Y-%m-%d %H:%M:%S')
-    st.write(df)
+    #st.write(df)
     st.success("Done.")
-    df['VMG'] = df.BSP*np.cos(df.TWA*np.pi/180).abs()
-    df['Tgt_VMG'] = df.Tgt_BSP*np.cos(df.TWA*np.pi/180).abs()
+    #df['VMG'] = df.BSP*np.cos(df.TWA*np.pi/180).abs()
+    #df['Tgt_VMG'] = df.Tgt_BSP*np.cos(df.TWA*np.pi/180).abs()
     df['Datetime'] = df.index
     df['Latitude'] = df.gpsLat
     df['Longitude'] = df.gpsLon

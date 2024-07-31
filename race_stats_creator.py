@@ -18,9 +18,9 @@ MYSQL_SCHEMA = "ac40"
 
 def get_legs(race, marks):
     race_marks = marks[(marks.time>race.Datetime.min()) & (marks.time<race.Datetime.max())]
-    st.write(marks)
-    st.write('time 1',race.Datetime.min())
-    st.write('time 2',race.Datetime.max())
+    #st.write(marks)
+    #st.write('time 1',race.Datetime.min())
+    #st.write('time 2',race.Datetime.max())
     #st.write(len(race_marks))
     #st.write("time 2",race_marks.iloc[0].time)
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
@@ -50,7 +50,7 @@ def find_crossing_time(df, lat1, lon1, lat2, lon2):
     crossing_time = None
 
     for i, row in df.iterrows():
-        boat_lat = row['gpsLatitude']
+        boat_lat = row['gpsLat']
         boat_lon = row['gpsLon']
         timestamp = row['Datetime']
         
@@ -66,14 +66,22 @@ def find_crossing_time(df, lat1, lon1, lat2, lon2):
 
     return crossing_time
     
-def get_start_recap(race):
+def get_start_recap(race, marks):
+    race_recap = pd.DataFrame()
+    leg1, leg2, leg3, leg4 = get_legs(race, marks)
     start_ = fetch_latest_marks()
+    #st.write(start_)
     rc, pin = start_['RC'], start_['PIN']
     dist_to_line = closest_distance_to_line(rc[0], rc[1], pin[0], pin[1], leg1.iloc[0].gpsLat, leg1.iloc[0].gpsLon)
     speed_start = leg1.iloc[0]['BSP%']
-    race_recap['DTL'] = dist_to_line
-    race_recap['BSP_start'] = speed_start
-    race_recap['TTC'] = find_crossing_time(df, lat1, lon1, lat2, lon2)
+    #st.write(speed_start)
+    race_recap.loc[0,'DTL'] = dist_to_line
+    race_recap.loc[0,'BSP_start'] = speed_start
+    ttc = find_crossing_time(race, rc[0], rc[1], pin[0], pin[1])
+    if ttc == None:
+        race_recap.loc[0,'TTC'] = np.nan
+    else :
+        race_recap.loc[0,'TTC'] = (get(ttc) - get(race.iloc[0].Datetime)).total_seconds()
     return race_recap
 
 
@@ -124,6 +132,7 @@ def interpolation_p(x, y, degree):
 
 
 def get_recap_table_leg(leg):
+    recap_table = pd.DataFrame()
     leg_num = 'leg1'
     i=1
      

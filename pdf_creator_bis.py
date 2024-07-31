@@ -9,6 +9,7 @@ from race_stats_creator import get_race_recap, get_start_recap, get_legs
 import plotly.express as px
 from PIL import Image
 import os
+import streamlit as st
 
 
 def dataframe_to_png(df, filename):
@@ -136,7 +137,8 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     name = f"race_{timestamp_string}"
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
     r = get_race_recap(race, marks).round(2)
-    s = get_start_recap(race).round(2)
+    s = get_start_recap(race, marks).round(2)
+    st.write(s)
     
     fig, ax = plt.subplots(figsize=(10, 1.4))  
 
@@ -175,7 +177,7 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     ax.axis('tight')
     ax.axis('off')
     table_start = ax.table(cellText=s.values, colLabels=s.columns, cellLoc='center', loc='center')
-    table_start.auto_set_font_size(False)
+    table_start.auto_set_font_size(True)
     table_start.set_fontsize(11)
     table_start.scale(1.1, 1.1)
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
@@ -185,7 +187,7 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     title = f"{name} recap"
     
     images = [
-        "png_race/main.png", "png_race/start.png",,"png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
+        "png_race/main.png", "png_race/start.png","png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
         "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
         "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
         "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png"

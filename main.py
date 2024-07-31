@@ -14,7 +14,11 @@ st.title("Race recap creator :")
 
 st.write("This app is easy to use : you have four buttons to timestamp the race moments : race start, top gate 1, bottom gate, top gate 2 and finish")
 st.write("After timestamping all the marks a pdf will be created (can take few minutes) then a button 'download pdf' will appeared click on it and there you have it !")
-
+st.session_state['timestamp1'] = datetime.strptime('2024-07-19 11:40:00', '%Y-%m-%d %H:%M:%S')
+st.session_state['timestamp2'] = datetime.strptime('2024-07-19 11:45:09', '%Y-%m-%d %H:%M:%S')
+st.session_state['timestamp3'] =  datetime.strptime('2024-07-19 11:47:56', '%Y-%m-%d %H:%M:%S')
+st.session_state['timestamp4'] =  datetime.strptime('2024-07-19 11:52:42', '%Y-%m-%d %H:%M:%S')
+st.session_state['timestamp5'] =  datetime.strptime('2024-07-19 11:56:37', '%Y-%m-%d %H:%M:%S')
 # Initialize session state for timestamps
 for i in range(1, 6):
     if f'timestamp{i}' not in st.session_state:

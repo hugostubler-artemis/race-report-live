@@ -284,7 +284,7 @@ def create_leg_pngs(leg, name):
         ))
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     #fig.write_image(f"{output_dir}/track_plot_vmg_{name}.png", format="png")
-    save_figure(fig, name)
+    save_figure_vmg(fig, name)
     
 
     # fig.write_image(f"png_race/track_plot_vmg_{name}.png")
@@ -439,6 +439,6 @@ def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
                "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
                "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
                "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png",
-               "png_race/pre_start_.png"]
+               "png_race/pre_start.png"]
    
     return create_pdf(title, images, pdf_buffer)

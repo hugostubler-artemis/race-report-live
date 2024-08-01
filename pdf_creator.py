@@ -48,10 +48,19 @@ def create_pdf(title, images, pdf_buffer):
     start_image_width, start_image_height = start_image.getSize()
     start_image_width /= 2
     start_image_height /= 2
-    c.drawImage(images[1], (width - start_image_width) / 2.0, height - 4 * margin - main_image_height - start_image_height, 
+    c.drawImage(images[1], (width - start_image_width) / 2.0, height - 4 * margin - start_image_height - start_image_height, 
                 width=start_image_width, height=start_image_height)
 
     # New page for Leg1 and Leg2 images
+
+    # Start Image (table)
+    start_track = ImageReader(images[1])
+    start_track_width, start_image_height = start_image.getSize()
+    start_track_width /= 2
+    start_track_height /= 2
+    c.drawImage(images[10], (width - start_track_width) / 2.0, height - 4 * margin - start_track_height - start_track_height, 
+                width=start_track_width, height=start_track_height)
+
     c.showPage()
 
     # Subtitle: Leg 1
@@ -140,7 +149,57 @@ def create_pdf(title, images, pdf_buffer):
     # Save the PDF
     c.save()
 
+def create_start_png(data):
+    start_ = fetch_latest_marks()
+    #st.write(start_)
+    rc, pin = start_['RC'], start_['PIN']
+    # Custom color scale
+    custom_color_scale = [
+        (0.0, "black"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max
+        (0.5, "red"),   # 22k is approximately 40% of the way to the max
+        (.6, "orange"),  # 26k is approximately 60% of the way to the max
+        (.8, "yellow"),
+        (.9, "green"),
+        (1, "green")# 30k is approximately 80% of the way to the m     # 38k and above -> red
+    ]
+    
+    # Create the scatter mapbox plot
+    fig = px.scatter_mapbox(data, lat="Latitude", lon="Longitude", color="BSP%",
+                            color_continuous_scale=custom_color_scale,
+                            title="Coloured by BSP")
+    
+    # Add two marks and a line between them
+    # Replace index1 and index2 with the actual indices of the points
+    index1, index2 = 0, 1  # Example indices
+    lat1, lon1 = data.loc[index1, 'Latitude'], data.loc[index1, 'Longitude']
+    lat2, lon2 = data.loc[index2, 'Latitude'], data.loc[index2, 'Longitude']
+    
+    fig.add_trace(go.Scattermapbox(
+        lat=[rc[0], pin[0]],
+        lon=[rc[1], pin[1]],
+        mode='markers+lines',
+        marker=dict(size=10, color='red'),
+        line=dict(width=2, color='blue'),
+        name="Start Line"
+    ))
+    
+    # Add text annotations every 10 seconds
+    for i, row in data.iterrows():
+        if i % 10 == 0:  # Assuming the rows are ordered by time and the interval is consistent
+            fig.add_trace(go.Scattermapbox(
+                lat=[row['Latitude']],
+                lon=[row['Longitude']],
+                mode='text',
+                text=[f"BSP: {row['BSP']}"],
+                textposition="top right",
+                showlegend=False
+            ))
+    
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+    fig.write_image("png_race/pre_start.png")
 
+    
 def create_leg_pngs(leg, name):
     name = f"leg{name}"
     center_lat = leg['Latitude'].mean()
@@ -240,9 +299,9 @@ def create_legs_track_png_leg(race, marks):
         create_leg_pngs(leg, name)
         name+=1
 
-def pdf_race_recap_creator(race, marks, pdf_buffer):
+def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
     now = datetime.now()
-
+    create_start_png(data)
     # format it as a string in the desired format
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]
@@ -274,68 +333,12 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
     
     # Color the cells based on their values
-    """
-    for i in r.index: #range(len(r)):
-        for col in ['VMG%', 'BSP%', 'DMG%']:
-            value = r.loc[i, col]
-            color = color_cells_perc(value).split(': ')[1]
-            table[i+1, j].set_facecolor(color)
-        
-    for i in r.index : #range(len(r)):
-        k=0
-        j = 0  # Assuming we start with the first column for each row
-        for col in ['VMG%', 'BSP%', 'DMG%']:
-            value = r.loc[i, col]
-            # Extract color string for the cell
-            color = color_cells_perc(value).split(': ')[1]
-           
-            # Set the face color of the cell in the `table`
-            
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-
-    for i in r.index: #range(len(r)):
-        k=0
-        j = 0
-        for col in ['TWA']:
-            value = r.loc[i, col]
-            color = color_cells_twa(value).split(': ')[1]
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-
-    for i in r.index: #range(len(r)):
-        k=0
-        j = 0
-        for col in ['Avg shift']:
-            value = r.loc[i, col]
-            color = color_cells_shift(value).split(': ')[1]
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-    for i in r.index:
-        k=1  # Iterate over the DataFrame rows
-        j = 0  # Reset column index for each new row
-        for col in r.columns:
-            if col not in ['VMG%', 'BSP%', 'DMG%', 'TWA', 'Avg shift']:
-                value = r.loc[i, col]
-                color = color_cells(value).split(': ')[1]
-                
-                # Check if the cell (i, j) exists in the table
-                if (k, j) in table._cells:
-                    table[k, j].set_facecolor(color)
-                else:
-                    st.write(f"Cell ({k}, {j}) does not exist in the table.")
-                
-                j += 1  # Move to the next column
-                #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
-            """
+    
     # Make the column headers taller for multiline text
-    for key, cell in table.get_celld().items():
-        if key[0] == 0:  # Header row
-            cell.set_height(0.8)
-            cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
+    #for key, cell in table.get_celld().items():
+    #    if key[0] == 0:  # Header row
+    #        cell.set_height(0.8)
+    #       cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
     
     # Alternating row colors for better readability
     for i in range(len(r)):
@@ -366,9 +369,10 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     create_legs_track_png_leg(race, marks)
     title = f"{name} recap"
     
-    images = ["png_race/main.png","png_race/start.png", "png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
+    images = ["png_race/main.png","png_race/start.png","png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
                "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
                "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
-               "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png", ]
+               "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png",
+               "png_race/pre_start.png"]
    
     return create_pdf(title, images, pdf_buffer)

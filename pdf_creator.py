@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from race_stats_creator import fetch_latest_marks
 import plotly.graph_objects as go
 import os
-import plotly.io as pio
+#import plotly.io as pio
 pio.renderers.default = 'kaleido'
 output_dir = "png_race"
 os.makedirs(output_dir, exist_ok=True)

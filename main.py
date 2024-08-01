@@ -66,7 +66,7 @@ if st.button('Finish line'):
     
     if st.session_state['timestamp1'] and st.session_state['timestamp2'] and st.session_state['timestamp3'] and st.session_state['timestamp4'] and st.session_state['timestamp5']:
             
-            st.session_state['timestamp1'] = (st.session_state['timestamp1'] - timedelta(hours=2)).replace(tzinfo=None)
+            ####   st.session_state['timestamp1'] = (st.session_state['timestamp1'] - timedelta(hours=2)).replace(tzinfo=None)
             #st.session_state['timestamp2'] = (st.session_state['timestamp2'] - timedelta(hours=2)).replace(tzinfo=None)
             #st.session_state['timestamp3'] = (st.session_state['timestamp3'] - timedelta(hours=2)).replace(tzinfo=None)
             #st.session_state['timestamp4'] = (st.session_state['timestamp4'] - timedelta(hours=2)).replace(tzinfo=None)
@@ -77,8 +77,8 @@ if st.button('Finish line'):
             marks.loc[0, 'time'] = st.session_state['timestamp2']
             marks.loc[1, 'time'] = st.session_state['timestamp3']
             marks.loc[2, 'time'] = st.session_state['timestamp4']
-
-            # st.write(marks)
+            
+            st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
             fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=90)).replace(tzinfo=None)
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')

@@ -179,9 +179,7 @@ def create_start_png(data):
                             color_continuous_scale=custom_color_scale,
                             title="Coloured by BSP")
     
-    # Add two marks and a line between them
-    # Replace index1 and index2 with the actual indices of the points
-    index1, index2 = 0, 1  # Example indices
+   
     lat1, lon1 = rc
     lat2, lon2 = pin
     """
@@ -195,12 +193,11 @@ def create_start_png(data):
     ))
    """
     fig.update_layout(
+    mapbox_style="open-street-map",
     mapbox=dict(
-        style="open-street-map",
         bearing=data.TWD.mean(),
         zoom=15   # Set the map rotation angle
-    ),
-    margin={"r": 0, "t": 0, "l": 0, "b": 0}
+    )
     )
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     fig.write_image(f"png_race/pre_start_.png")

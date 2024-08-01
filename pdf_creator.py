@@ -17,7 +17,8 @@ import matplotlib.pyplot as plt
 from race_stats_creator import fetch_latest_marks
 import plotly.graph_objects as go
 import os
-
+output_dir = "png_race"
+os.makedirs(output_dir, exist_ok=True)
 
 def dataframe_to_png(df, filename):
     dfi.export(df, filename)
@@ -200,7 +201,8 @@ def create_start_png(data):
     )
     )
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
-    fig.write_image(f"png_race/pre_start_.png")
+    fig.write_image(f"{output_dir}/pre_start.png", format="png")
+    
 
     
 def create_leg_pngs(leg, name):
@@ -227,7 +229,9 @@ def create_leg_pngs(leg, name):
             zoom=13 # Adjust zoom level here
         ))
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    fig.write_image(f"png_race/track_plot_vmg_{name}.png")
+    fig.write_image(f"{output_dir}/track_plot_vmg_{name}.png", format="png")
+
+    # fig.write_image(f"png_race/track_plot_vmg_{name}.png")
     
     custom_color_scale = [
     (0.0, "red"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max

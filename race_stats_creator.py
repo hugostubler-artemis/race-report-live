@@ -151,7 +151,7 @@ def get_recap_table_leg(leg):
         # st.write(leg.Heel)
         recap_table.loc[f'{leg_num}','devHeel'] = leg.rolling(10).std()['Heel'].mean() #.set_index(leg.Datetime)
         recap_table.loc[f'{leg_num}','devBSP'] = leg.rolling(10).std()['BSP'].mean()
-        recap_table.loc[f'{leg_num}','devVMG'] = leg[leg['VMG%']>0].set_index(leg[leg['VMG%']>0].Datetime)['VMG'].mean()
+        recap_table.loc[f'{leg_num}','devVMG'] = leg.set_index(leg.Datetime)['VMG'].mean()
         recap_table.loc[f'{leg_num}','dist_sailed'] = leg['BSP'].sum()/(5*1854) #.set_index(leg.Datetime)
         leg['TWD_delta'] = np.where(leg.TWA>0,leg.TWD-leg.TWD.mean(),leg.TWD.mean()-leg.TWD)
         recap_table.loc[f'{leg_num}','Shift'] = leg['TWD_delta'].mean()

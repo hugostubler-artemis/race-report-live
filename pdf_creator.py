@@ -14,7 +14,8 @@ from PIL import Image
 from io import BytesIO
 import streamlit as st
 import matplotlib.pyplot as plt
-
+from race_stats_creator import fetch_latest_marks
+import plotly.graph_objects as go
 import os
 
 
@@ -35,30 +36,40 @@ def create_pdf(title, images, pdf_buffer):
     c.setFont("Helvetica-Bold", 18)
     c.drawString(margin, height - 2 * margin, "Recap Table")
 
+    # Calculate positions and sizes for images
+    image_scale_factor = 2  # Scale images down by a factor of 2
+
     # Main Image (table)
     main_image = ImageReader(images[0])
     main_image_width, main_image_height = main_image.getSize()
-    main_image_width /= 2
-    main_image_height /= 2
-    c.drawImage(images[0], (width - main_image_width) / 2.0, height - 3 * margin - main_image_height, 
-                width=main_image_width, height=main_image_height)
+    main_image_width /= image_scale_factor
+    main_image_height /= image_scale_factor
 
     # Start Image (table)
     start_image = ImageReader(images[1])
     start_image_width, start_image_height = start_image.getSize()
-    start_image_width /= 2
-    start_image_height /= 2
-    c.drawImage(images[1], (width - start_image_width) / 2.0, height - 4 * margin - start_image_height - start_image_height, 
+    start_image_width /= image_scale_factor
+    start_image_height /= image_scale_factor
+
+    # Start Track Image (table)
+    start_track = ImageReader(images[2])
+    start_track_width, start_track_height = start_track.getSize()
+    start_track_width /= image_scale_factor/1.5
+    start_track_height /= image_scale_factor/1.5
+
+    # Draw Main Image
+    c.drawImage(images[0], (width - main_image_width) / 2.0, 
+                height - 3 * margin - main_image_height, 
+                width=main_image_width, height=main_image_height)
+
+    # Draw Start Image
+    c.drawImage(images[1], (width - start_image_width) / 2.0, 
+                height - 3 * margin - main_image_height - separation - start_image_height, 
                 width=start_image_width, height=start_image_height)
 
-    # New page for Leg1 and Leg2 images
-
-    # Start Image (table)
-    start_track = ImageReader(images[1])
-    start_track_width, start_image_height = start_image.getSize()
-    start_track_width /= 2
-    start_track_height /= 2
-    c.drawImage(images[10], (width - start_track_width) / 2.0, height - 4 * margin - start_track_height - start_track_height, 
+    # Draw Start Track Image
+    c.drawImage(images[10], (width - start_track_width) / 2.0, 
+                height - 3 * margin - main_image_height - separation - start_image_height - separation - start_track_height, 
                 width=start_track_width, height=start_track_height)
 
     c.showPage()
@@ -159,7 +170,7 @@ def create_start_png(data):
         (0.5, "red"),   # 22k is approximately 40% of the way to the max
         (.6, "orange"),  # 26k is approximately 60% of the way to the max
         (.8, "yellow"),
-        (.9, "green"),
+        (.85, "green"),
         (1, "green")# 30k is approximately 80% of the way to the m     # 38k and above -> red
     ]
     
@@ -171,9 +182,8 @@ def create_start_png(data):
     # Add two marks and a line between them
     # Replace index1 and index2 with the actual indices of the points
     index1, index2 = 0, 1  # Example indices
-    lat1, lon1 = data.loc[index1, 'Latitude'], data.loc[index1, 'Longitude']
-    lat2, lon2 = data.loc[index2, 'Latitude'], data.loc[index2, 'Longitude']
-    
+    lat1, lon1 = rc
+    lat2, lon2 = pin
     fig.add_trace(go.Scattermapbox(
         lat=[rc[0], pin[0]],
         lon=[rc[1], pin[1]],
@@ -182,20 +192,15 @@ def create_start_png(data):
         line=dict(width=2, color='blue'),
         name="Start Line"
     ))
-    
-    # Add text annotations every 10 seconds
-    for i, row in data.iterrows():
-        if i % 10 == 0:  # Assuming the rows are ordered by time and the interval is consistent
-            fig.add_trace(go.Scattermapbox(
-                lat=[row['Latitude']],
-                lon=[row['Longitude']],
-                mode='text',
-                text=[f"BSP: {row['BSP']}"],
-                textposition="top right",
-                showlegend=False
-            ))
-    
-    fig.update_layout(mapbox_style="open-street-map")
+   
+    fig.update_layout(
+    mapbox=dict(
+        style="open-street-map",
+        bearing=data.TWD.mean(),
+        zoom=15   # Set the map rotation angle
+    ),
+    margin={"r": 0, "t": 0, "l": 0, "b": 0}
+    )
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     fig.write_image("png_race/pre_start.png")
 
@@ -301,7 +306,7 @@ def create_legs_track_png_leg(race, marks):
 
 def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
     now = datetime.now()
-    create_start_png(data)
+    create_start_png(pre_start)
     # format it as a string in the desired format
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]

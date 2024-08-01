@@ -80,7 +80,7 @@ if st.button('Finish line'):
             
             st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
-            fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=90)).replace(tzinfo=None)
+            fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=90)).replace(tzinfo=None).strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')
             whereTags_ = {"boat": "AC40"}
             # Convert timestamps to string format required by InfluxDB
@@ -96,7 +96,8 @@ if st.button('Finish line'):
             # st.write(len(race))
             race = data[data.Datetime>=st.session_state['timestamp1']]
             pre_start = data[data.Datetime<=st.session_state['timestamp1']]
-            file_path = pdf_race_recap_creator(race, marks,'race stats')
+            #
+            # file_path = pdf_race_recap_creator(race,pre_start, marks,'race stats')
 
             title = "test_pdf"
             pdf_buffer = BytesIO()

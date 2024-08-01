@@ -61,10 +61,10 @@ def InfluxEpochToTime(epoch):
 def QueryInfluxData(
         bucket, varMapping, fromTime, toTime, freq="1s", whereTags=None) -> pd.DataFrame:
 
-    st.write("Connecting to influx database '", bucket, "'...")
+    #st.write("Connecting to influx database '", bucket, "'...")
 
     # open conx to InfluxDB
-    st.write("Connecting to influx...")
+    #st.write("Connecting to influx...")
     try:
         influx_client = InfluxDBClient(
             url=INFLUXDB_API_URL,

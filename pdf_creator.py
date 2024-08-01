@@ -152,7 +152,7 @@ def create_start_png(pre_start):
     ]
     
     # Create the scatter mapbox plot
-    fig = px.scatter_mapbox(data, lat="Latitude", lon="Longitude", color="BSP%",
+    fig = px.scatter_mapbox(pre_start, lat="Latitude", lon="Longitude", color="BSP%",
                             color_continuous_scale=custom_color_scale,
                             title="Coloured by BSP")
     

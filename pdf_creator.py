@@ -20,7 +20,7 @@ import os
 #import plotly.io as pio
 
 # Function to save Plotly figure
-def save_figure(fig, name):
+def save_figure_vmg(fig, name):
     output_dir = "output_images"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
@@ -36,7 +36,39 @@ def save_figure(fig, name):
         # Consider a fallback approach, such as using an API service
         st.write("Consider using an external service for rendering.")
 
-# Assuming `fig` is your Plotly figure and `name` is the identifier
+def save_figure_track(fig, name):
+    output_dir = "output_images"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+    try:
+        output_path = os.path.join(output_dir, f"track_plot_tactic_{name}.png")
+        fig.write_image(output_path, format="png")
+        st.write(f"Image successfully saved to {output_path}")
+    except ValueError as ve:
+        st.write(f"ValueError: {ve}")
+    except Exception as e:
+        # Print or log the complete error
+        st.write(f"Failed to save image: {e}")
+        # Consider a fallback approach, such as using an API service
+        st.write("Consider using an external service for rendering.")
+
+def save_figure_pre_start(fig):
+    output_dir = "output_images"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+    try:
+        output_path = os.path.join(output_dir, f"pre_start.png")
+        fig.write_image(output_path, format="png")
+        st.write(f"Image successfully saved to {output_path}")
+    except ValueError as ve:
+        st.write(f"ValueError: {ve}")
+    except Exception as e:
+        # Print or log the complete error
+        st.write(f"Failed to save image: {e}")
+        # Consider a fallback approach, such as using an API service
+        st.write("Consider using an external service for rendering.")
+
+
 
 
 
@@ -223,6 +255,7 @@ def create_start_png(data):
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     
     # fig.write_image(f"{output_dir}/pre_start.png", format="png")
+    save_figure_pre_start(fig)
     fig.write_image(f"pre_start.png", format="png")
 
     
@@ -277,7 +310,8 @@ def create_leg_pngs(leg, name):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     #fig.write_image(f"png_race/track_plot_tactic_{name}.png")
     # fig.write_image(f"{output_dir}/track_plot_tactic_{name}.png", format="png")
-    fig.write_image(f"track_plot_tactic_{name}.png", format="png")
+    save_figure_track(fig, name)
+    #fig.write_image(f"track_plot_tactic_{name}.png", format="png")
 
 def color_cells_perc(val):
     color = 'white'
@@ -333,7 +367,7 @@ def create_legs_track_png_leg(race, marks):
 
 def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
     now = datetime.now()
-    #   #   # create_start_png(pre_start)
+    create_start_png(pre_start)
     # format it as a string in the desired format
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]

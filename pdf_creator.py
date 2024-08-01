@@ -254,7 +254,8 @@ def create_leg_pngs(leg, name):
             zoom=13 # Adjust zoom level here
         ),)
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    fig.write_image(f"png_race/track_plot_tactic_{name}.png")
+    #fig.write_image(f"png_race/track_plot_tactic_{name}.png")
+    fig.write_image(f"{output_dir}/track_plot_tactic_{name}.png", format="png")
 
 def color_cells_perc(val):
     color = 'white'

@@ -140,7 +140,54 @@ def create_pdf(title, images, pdf_buffer):
     # Save the PDF
     c.save()
 
+def create_start_png(pre_start):
+    # Custom color scale
+    custom_color_scale = [
+        (0.0, "black"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max
+        (0.5, "red"),   # 22k is approximately 40% of the way to the max
+        (.6, "orange"),  # 26k is approximately 60% of the way to the max
+        (.8, "yellow"),
+        (.9, "green"),
+        (1, "green")# 30k is approximately 80% of the way to the m     # 38k and above -> red
+    ]
+    
+    # Create the scatter mapbox plot
+    fig = px.scatter_mapbox(data, lat="Latitude", lon="Longitude", color="BSP%",
+                            color_continuous_scale=custom_color_scale,
+                            title="Coloured by BSP")
+    
+    # Add two marks and a line between them
+    # Replace index1 and index2 with the actual indices of the points
+    index1, index2 = 0, 1  # Example indices
+    lat1, lon1 = data.loc[index1, 'Latitude'], data.loc[index1, 'Longitude']
+    lat2, lon2 = data.loc[index2, 'Latitude'], data.loc[index2, 'Longitude']
+    
+    fig.add_trace(go.Scattermapbox(
+        lat=[lat1, lat2],
+        lon=[lon1, lon2],
+        mode='markers+lines',
+        marker=dict(size=10, color='red'),
+        line=dict(width=2, color='blue'),
+        name="Line between two marks"
+    ))
+    
+    # Add text annotations every 10 seconds
+    for i, row in data.iterrows():
+        if i % 10 == 0:  # Assuming the rows are ordered by time and the interval is consistent
+            fig.add_trace(go.Scattermapbox(
+                lat=[row['Latitude']],
+                lon=[row['Longitude']],
+                mode='text',
+                text=[f"BSP: {row['BSP']}"],
+                textposition="top right",
+                showlegend=False
+            ))
+    
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+    fig.write_image("png_race/pre_start.png")
 
+    
 def create_leg_pngs(leg, name):
     name = f"leg{name}"
     center_lat = leg['Latitude'].mean()

@@ -43,7 +43,7 @@ def save_figure_track(fig, name):
     try:
         output_path = os.path.join(output_dir, f"track_plot_tactic_{name}.png")
         fig.write_image(output_path, format="png")
-        st.write(f"Image successfully saved to {output_path}")
+        #st.write(f"Image successfully saved to {output_path}")
     except ValueError as ve:
         st.write(f"ValueError: {ve}")
     except Exception as e:
@@ -59,7 +59,7 @@ def save_figure_pre_start(fig):
     try:
         output_path = os.path.join(output_dir, f"pre_start.png")
         fig.write_image(output_path, format="png")
-        st.write(f"Image successfully saved to {output_path}")
+        #st.write(f"Image successfully saved to {output_path}")
     except ValueError as ve:
         st.write(f"ValueError: {ve}")
     except Exception as e:

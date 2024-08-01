@@ -140,7 +140,10 @@ def create_pdf(title, images, pdf_buffer):
     # Save the PDF
     c.save()
 
-def create_start_png(pre_start):
+def create_start_png(data):
+    start_ = fetch_latest_marks()
+    #st.write(start_)
+    rc, pin = start_['RC'], start_['PIN']
     # Custom color scale
     custom_color_scale = [
         (0.0, "black"),    # 0 -> blue,    # 16k is approximately 20% of the way to the max
@@ -152,7 +155,7 @@ def create_start_png(pre_start):
     ]
     
     # Create the scatter mapbox plot
-    fig = px.scatter_mapbox(pre_start, lat="Latitude", lon="Longitude", color="BSP%",
+    fig = px.scatter_mapbox(data, lat="Latitude", lon="Longitude", color="BSP%",
                             color_continuous_scale=custom_color_scale,
                             title="Coloured by BSP")
     
@@ -163,12 +166,12 @@ def create_start_png(pre_start):
     lat2, lon2 = data.loc[index2, 'Latitude'], data.loc[index2, 'Longitude']
     
     fig.add_trace(go.Scattermapbox(
-        lat=[lat1, lat2],
-        lon=[lon1, lon2],
+        lat=[rc[0], pin[0]],
+        lon=[rc[1], pin[1]],
         mode='markers+lines',
         marker=dict(size=10, color='red'),
         line=dict(width=2, color='blue'),
-        name="Line between two marks"
+        name="Start Line"
     ))
     
     # Add text annotations every 10 seconds
@@ -321,68 +324,12 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
     
     # Color the cells based on their values
-    """
-    for i in r.index: #range(len(r)):
-        for col in ['VMG%', 'BSP%', 'DMG%']:
-            value = r.loc[i, col]
-            color = color_cells_perc(value).split(': ')[1]
-            table[i+1, j].set_facecolor(color)
-        
-    for i in r.index : #range(len(r)):
-        k=0
-        j = 0  # Assuming we start with the first column for each row
-        for col in ['VMG%', 'BSP%', 'DMG%']:
-            value = r.loc[i, col]
-            # Extract color string for the cell
-            color = color_cells_perc(value).split(': ')[1]
-           
-            # Set the face color of the cell in the `table`
-            
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-
-    for i in r.index: #range(len(r)):
-        k=0
-        j = 0
-        for col in ['TWA']:
-            value = r.loc[i, col]
-            color = color_cells_twa(value).split(': ')[1]
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-
-    for i in r.index: #range(len(r)):
-        k=0
-        j = 0
-        for col in ['Avg shift']:
-            value = r.loc[i, col]
-            color = color_cells_shift(value).split(': ')[1]
-            table[k+1, j].set_facecolor(color)
-            j += 1  # Move to the next column
-            k+=1
-    for i in r.index:
-        k=1  # Iterate over the DataFrame rows
-        j = 0  # Reset column index for each new row
-        for col in r.columns:
-            if col not in ['VMG%', 'BSP%', 'DMG%', 'TWA', 'Avg shift']:
-                value = r.loc[i, col]
-                color = color_cells(value).split(': ')[1]
-                
-                # Check if the cell (i, j) exists in the table
-                if (k, j) in table._cells:
-                    table[k, j].set_facecolor(color)
-                else:
-                    st.write(f"Cell ({k}, {j}) does not exist in the table.")
-                
-                j += 1  # Move to the next column
-                #r = race_recap.style.background_gradient(cmap="YlGnBu", axis=0).set_precision(2)
-            """
+    
     # Make the column headers taller for multiline text
-    for key, cell in table.get_celld().items():
-        if key[0] == 0:  # Header row
-            cell.set_height(0.8)
-            cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
+    #for key, cell in table.get_celld().items():
+    #    if key[0] == 0:  # Header row
+    #        cell.set_height(0.8)
+    #       cell.set_text_props(fontsize=11, wrap=True)  # Enable wrapping of text
     
     # Alternating row colors for better readability
     for i in range(len(r)):

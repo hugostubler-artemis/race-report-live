@@ -19,8 +19,26 @@ import plotly.graph_objects as go
 import os
 #import plotly.io as pio
 
-output_dir = "png_race"
-os.makedirs(output_dir, exist_ok=True)
+# Function to save Plotly figure
+def save_figure(fig, name):
+    output_dir = "output_images"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+    try:
+        output_path = os.path.join(output_dir, f"track_plot_vmg_{name}.png")
+        fig.write_image(output_path, format="png")
+        st.write(f"Image successfully saved to {output_path}")
+    except ValueError as ve:
+        st.write(f"ValueError: {ve}")
+    except Exception as e:
+        # Print or log the complete error
+        st.write(f"Failed to save image: {e}")
+        # Consider a fallback approach, such as using an API service
+        st.write("Consider using an external service for rendering.")
+
+# Assuming `fig` is your Plotly figure and `name` is the identifier
+
+
 
 def dataframe_to_png(df, filename):
     dfi.export(df, filename)
@@ -233,7 +251,8 @@ def create_leg_pngs(leg, name):
         ))
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     #fig.write_image(f"{output_dir}/track_plot_vmg_{name}.png", format="png")
-    fig.write_image(f"track_plot_vmg_{name}.png", format="png")
+    save_figure(fig, name)
+    
 
     # fig.write_image(f"png_race/track_plot_vmg_{name}.png")
     

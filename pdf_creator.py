@@ -48,10 +48,19 @@ def create_pdf(title, images, pdf_buffer):
     start_image_width, start_image_height = start_image.getSize()
     start_image_width /= 2
     start_image_height /= 2
-    c.drawImage(images[1], (width - start_image_width) / 2.0, height - 4 * margin - main_image_height - start_image_height, 
+    c.drawImage(images[1], (width - start_image_width) / 2.0, height - 4 * margin - start_image_height - start_image_height, 
                 width=start_image_width, height=start_image_height)
 
     # New page for Leg1 and Leg2 images
+
+    # Start Image (table)
+    start_track = ImageReader(images[1])
+    start_track_width, start_image_height = start_image.getSize()
+    start_track_width /= 2
+    start_track_height /= 2
+    c.drawImage(images[10], (width - start_track_width) / 2.0, height - 4 * margin - start_track_height - start_track_height, 
+                width=start_track_width, height=start_track_height)
+
     c.showPage()
 
     # Subtitle: Leg 1
@@ -290,9 +299,9 @@ def create_legs_track_png_leg(race, marks):
         create_leg_pngs(leg, name)
         name+=1
 
-def pdf_race_recap_creator(race, marks, pdf_buffer):
+def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
     now = datetime.now()
-
+    create_start_png(data)
     # format it as a string in the desired format
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]
@@ -360,9 +369,10 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     create_legs_track_png_leg(race, marks)
     title = f"{name} recap"
     
-    images = ["png_race/main.png","png_race/start.png", "png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
+    images = ["png_race/main.png","png_race/start.png","png_race/track_plot_vmg_leg1.png", "png_race/track_plot_tactic_leg1.png", 
                "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
                "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
-               "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png", ]
+               "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png",
+               "png_race/pre_start.png"]
    
     return create_pdf(title, images, pdf_buffer)

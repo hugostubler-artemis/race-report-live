@@ -96,7 +96,7 @@ if st.button('Finish line'):
 
             title = "test_pdf"
             pdf_buffer = BytesIO()
-            pdf_race_recap_creator(race, marks, pdf_buffer)
+            pdf_race_recap_creator(race, pre_start, marks, pdf_buffer)
             pdf_buffer.seek(0)
 
             # Offer PDF for download

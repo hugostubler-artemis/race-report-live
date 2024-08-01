@@ -27,14 +27,14 @@ def save_figure_vmg(fig, name):
     try:
         output_path = os.path.join(output_dir, f"track_plot_vmg_{name}.png")
         fig.write_image(output_path, format="png")
-        st.write(f"Image successfully saved to {output_path}")
+        st.success(f"Image successfully saved to {output_path}")
     except ValueError as ve:
-        st.write(f"ValueError: {ve}")
+        st.error(f"ValueError: {ve}")
     except Exception as e:
         # Print or log the complete error
-        st.write(f"Failed to save image: {e}")
+        st.error(f"Failed to save image: {e}")
         # Consider a fallback approach, such as using an API service
-        st.write("Consider using an external service for rendering.")
+        st.error("Consider using an external service for rendering.")
 
 def save_figure_track(fig, name):
     output_dir = "output_images"

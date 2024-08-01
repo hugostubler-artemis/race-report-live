@@ -184,6 +184,7 @@ def create_start_png(data):
     index1, index2 = 0, 1  # Example indices
     lat1, lon1 = rc
     lat2, lon2 = pin
+    """
     fig.add_trace(go.Scattermapbox(
         lat=[rc[0], pin[0]],
         lon=[rc[1], pin[1]],
@@ -192,7 +193,7 @@ def create_start_png(data):
         line=dict(width=2, color='blue'),
         name="Start Line"
     ))
-   
+   """
     fig.update_layout(
     mapbox=dict(
         style="open-street-map",
@@ -202,7 +203,7 @@ def create_start_png(data):
     margin={"r": 0, "t": 0, "l": 0, "b": 0}
     )
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
-    fig.write_image("png_race/pre_start.png")
+    fig.write_image(f"png_race/pre_start_.png")
 
     
 def create_leg_pngs(leg, name):
@@ -378,6 +379,6 @@ def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
                "png_race/track_plot_vmg_leg2.png", "png_race/track_plot_tactic_leg2.png",
                "png_race/track_plot_vmg_leg3.png", "png_race/track_plot_tactic_leg3.png", 
                "png_race/track_plot_vmg_leg4.png", "png_race/track_plot_tactic_leg4.png",
-               "png_race/pre_start.png"]
+               "png_race/pre_start_.png"]
    
     return create_pdf(title, images, pdf_buffer)

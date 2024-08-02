@@ -21,13 +21,13 @@ import os
 
 # Function to save Plotly figure
 def save_figure_vmg(fig, name):
-    output_dir = "output_images"
+    output_dir = "png_race"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
     try:
         output_path = os.path.join(output_dir, f"track_plot_vmg_{name}.png")
         fig.write_image(output_path, format="png")
-        st.success(f"Image successfully saved to {output_path}")
+        # st.success(f"Image successfully saved to {output_path}")
     except ValueError as ve:
         st.error(f"ValueError: {ve}")
     except Exception as e:
@@ -37,7 +37,7 @@ def save_figure_vmg(fig, name):
         st.error("Consider using an external service for rendering.")
 
 def save_figure_track(fig, name):
-    output_dir = "output_images"
+    output_dir = "png_race"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
     try:
@@ -53,7 +53,7 @@ def save_figure_track(fig, name):
         st.write("Consider using an external service for rendering.")
 
 def save_figure_pre_start(fig):
-    output_dir = "output_images"
+    output_dir = "png_race"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
     try:

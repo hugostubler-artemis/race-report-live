@@ -80,7 +80,7 @@ if st.button('Finish line'):
             
             st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
-            fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=90)).replace(tzinfo=None).strftime('%H:%M:%S')
+            fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=100)).replace(tzinfo=None).strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')
             whereTags_ = {"boat": "AC40"}
             # Convert timestamps to string format required by InfluxDB

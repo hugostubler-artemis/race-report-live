@@ -367,7 +367,7 @@ def create_legs_track_png_leg(race, marks):
 
 def pdf_race_recap_creator(race, pre_start, marks, pdf_buffer):
     now = datetime.now()
-    # create_start_png(pre_start)
+    create_start_png(pre_start)
     # format it as a string in the desired format
     timestamp_string = now.strftime('%Y-%m-%dT%H:%M:%S')
     name = f"race_{timestamp_string}" #[name for name, var in globals().items() if var is race][0]

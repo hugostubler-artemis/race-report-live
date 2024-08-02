@@ -78,7 +78,7 @@ if st.button('Finish line'):
             marks.loc[1, 'time'] = st.session_state['timestamp3']
             marks.loc[2, 'time'] = st.session_state['timestamp4']
             
-            #st.write(marks)
+            st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
             fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=90)).replace(tzinfo=None).strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')

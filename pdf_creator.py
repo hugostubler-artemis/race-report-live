@@ -235,7 +235,7 @@ def create_start_png(data):
    
     lat1, lon1 = rc
     lat2, lon2 = pin
-    """
+    
     fig.add_trace(go.Scattermapbox(
         lat=[rc[0], pin[0]],
         lon=[rc[1], pin[1]],
@@ -244,7 +244,7 @@ def create_start_png(data):
         line=dict(width=2, color='blue'),
         name="Start Line"
     ))
-   """
+   
     fig.update_layout(
     mapbox_style="open-street-map",
     mapbox=dict(

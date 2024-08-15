@@ -99,7 +99,7 @@ if st.button('Finish line'):
             #
             # file_path = pdf_race_recap_creator(race,pre_start, marks,'race stats')
 
-            title = "test_pdf"
+            title = f"{start_time}_race_recap_pdf"
             pdf_buffer = BytesIO()
             pdf_race_recap_creator(race, pre_start, marks, pdf_buffer)
             pdf_buffer.seek(0)

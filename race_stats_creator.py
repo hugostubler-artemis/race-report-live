@@ -16,6 +16,18 @@ MYSQL_USR = "admin"
 MYSQL_PWD = "Vh&bxj07oiFNFP;Jg+BZ"
 MYSQL_SCHEMA = "ac40"
 
+def compute_targets(df, target):
+    target["VMG"] = target.BSP * np.cos(target.TWA * np.pi / 180)
+    target.iloc[0] = 0
+    for var in ['VMG','BSP','TWA']:
+        polynom_up = interpolation_p(target.iloc[1:].TWS, target.iloc[1:][var], 4)
+        polynom_down = interpolation_p(
+            target.iloc[1:].TWS, target.iloc[1:][var], 4
+        )
+        df[f"Tgt_{var}"] = np.where(df.TWA>90, polynom_down(df.TWS), polynom_up(df.TWS))
+        df[f"{var}%"] = df[var]/df[f"Tgt_{var}"]
+    return df
+    
 def get_legs(race, marks):
     race_marks = marks[(marks.time>race.Datetime.min()) & (marks.time<race.Datetime.max())]
     #st.write(marks)
@@ -23,6 +35,13 @@ def get_legs(race, marks):
     #st.write('time 2',race.Datetime.max())
     #st.write(len(race_marks))
     #st.write("time 2",race_marks.iloc[0].time)
+    target_up = pd.read_csv('targets/upwind-Tableau 3.csv')
+    target_down = pd.read_csv('targets/downwind-Tableau 3.csv')
+
+    leg1 = compute_targets(leg1, target_up)
+    leg2 = compute_targets(leg1, target_down)
+    leg3 = compute_targets(leg1, target_up)
+    leg4 = compute_targets(leg1, target_down)
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
     leg2 = race[(race.Datetime<race_marks.iloc[1].time) & (race.Datetime>race_marks.iloc[0].time)]
     leg3 = race[(race.Datetime<race_marks.iloc[2].time) & (race.Datetime>race_marks.iloc[1].time)]

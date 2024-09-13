@@ -25,7 +25,7 @@ def compute_targets(df, target):
             target.iloc[1:].TWS, target.iloc[1:][var], 4
         )
         df[f"Tgt_{var}"] = np.where(df.TWA>90, polynom_down(df.TWS), polynom_up(df.TWS))
-        df[f"{var}%"] = df[var]/df[f"Tgt_{var}"]
+        df[f"{var}%"] = (df[var]/df[f"Tgt_{var}"]).abs()
     return df
     
 def get_legs(race, marks):

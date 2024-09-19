@@ -38,19 +38,22 @@ def get_legs(race, marks):
     target_up = pd.read_csv('targets/upwind-Tableau 3.csv')
     target_down = pd.read_csv('targets/downwind-Tableau 3.csv')
 
-    leg1 = compute_targets(leg1, target_up)
-    leg2 = compute_targets(leg1, target_down)
-    leg3 = compute_targets(leg1, target_up)
-    leg4 = compute_targets(leg1, target_down)
+    
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
     leg2 = race[(race.Datetime<race_marks.iloc[1].time) & (race.Datetime>race_marks.iloc[0].time)]
     leg3 = race[(race.Datetime<race_marks.iloc[2].time) & (race.Datetime>race_marks.iloc[1].time)]
     leg4 = race[race.Datetime>race_marks.iloc[2].time]
     
+    
     leg1['TWD_delta'] = np.where(leg1.TWA>0,leg1.TWD-leg1.TWD.mean(),leg1.TWD.mean()-leg1.TWD)
     leg2['TWD_delta'] = np.where(leg2.TWA>0,leg2.TWD-leg2.TWD.mean(),leg2.TWD.mean()-leg2.TWD)
     leg3['TWD_delta'] = np.where(leg3.TWA>0,leg3.TWD-leg3.TWD.mean(),leg3.TWD.mean()-leg3.TWD)
     leg4['TWD_delta'] = np.where(leg4.TWA>0,leg4.TWD-leg4.TWD.mean(),leg4.TWD.mean()-leg4.TWD)
+
+    leg1 = compute_targets(leg1, target_up)
+    leg2 = compute_targets(leg1, target_down)
+    leg3 = compute_targets(leg1, target_up)
+    leg4 = compute_targets(leg1, target_down)
     return leg1, leg2, leg3, leg4
 
 def cross_product_sign(lat1, lon1, lat2, lon2, boat_lat, boat_lon):

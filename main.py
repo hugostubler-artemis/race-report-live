@@ -93,7 +93,7 @@ if st.button('Finish line'):
                                        toTime=datetime.strptime(
                                            f"{date} {toTime_}", "%Y-%m-%d %H:%M:%S"),
                                        freq="1s", whereTags=whereTags_)
-            st.write(len(race))
+            #st.write(len(race))
             race = data[data.Datetime>=st.session_state['timestamp1']]
             pre_start = data[data.Datetime<=st.session_state['timestamp1']]
             #

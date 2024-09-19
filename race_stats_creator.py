@@ -17,10 +17,10 @@ MYSQL_PWD = "Vh&bxj07oiFNFP;Jg+BZ"
 MYSQL_SCHEMA = "ac40"
 
 def compute_targets(df, target):
-    target["VMG"] = target.BSP * np.cos(target.TWA * np.pi / 180)
+    target["VMG"] = target['BSP'] * np.cos(target['TWA'] * np.pi / 180)
     target.iloc[0] = 0
     for var in ['VMG','BSP','TWA']:
-        polynom_up = interpolation_p(target.iloc[1:].TWS, target.iloc[1:][var], 4)
+        polynom_up = interpolation_p(target.iloc[1:]['TWS'], target.iloc[1:][var], 4)
         polynom_down = interpolation_p(
             target.iloc[1:].TWS, target.iloc[1:][var], 4
         )

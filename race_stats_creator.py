@@ -8,6 +8,7 @@ from geopy import distance
 import math
 import mysql.connector
 import streamlit as st
+import os
 
 
 MYSQL_HOST = "sailing-performance.artemisracing.com"
@@ -35,6 +36,11 @@ def get_legs(race, marks):
     #st.write('time 2',race.Datetime.max())
     #st.write(len(race_marks))
     #st.write("time 2",race_marks.iloc[0].time)
+    output_dir = "targets"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
+
+    try:
+        output_path = os.path.join(output_dir, f"track_plot_vmg_{name}.png")
     target_up = pd.read_csv('targets/upwind-Tableau 3.csv')
     target_down = pd.read_csv('targets/downwind-Tableau 3.csv')
     st.write(target_up)

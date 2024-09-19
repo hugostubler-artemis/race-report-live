@@ -39,10 +39,10 @@ def get_legs(race, marks):
     output_dir = "targets"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 
-    try:
-        output_path = os.path.join(output_dir, f"track_plot_vmg_{name}.png")
-    target_up = pd.read_csv('targets/upwind-Tableau 3.csv')
-    target_down = pd.read_csv('targets/downwind-Tableau 3.csv')
+    up_path = os.path.join(output_dir, f"upwind-Tableau 3.csv")
+    down_path = os.path.join(output_dir, f"downwind-Tableau 3.csv")
+    target_up = pd.read_csv(up_path)
+    target_down = pd.read_csv(down_path)
     st.write(target_up)
     
     leg1 = race[race.Datetime<race_marks.iloc[0].time]

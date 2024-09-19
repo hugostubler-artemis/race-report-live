@@ -118,7 +118,7 @@ def QueryInfluxData(
     df['Datetime'] = df.index
     df['Latitude'] = df.gpsLat
     df['Longitude'] = df.gpsLon
-    #df['VMG%'] = (df.VMG/df.Tgt_VMG).abs()
-    #df['BSP%'] = df.BSP/df.Tgt_BSP
+    df['VMG%'] = (df.VMG/df.Tgt_VMG).abs()
+    df['BSP%'] = df.BSP/df.Tgt_BSP
     df.Datetime = pd.to_datetime(df.Datetime)
     return df

@@ -43,7 +43,7 @@ def get_legs(race, marks):
     down_path = os.path.join(output_dir, f"downwind-Tableau 3.csv")
     target_up = pd.read_csv(up_path,sep=";")
     target_down = pd.read_csv(down_path,sep=";")
-    st.write(target_up)
+    #st.write(target_up)
     
     leg1 = race[race.Datetime<race_marks.iloc[0].time]
     leg2 = race[(race.Datetime<race_marks.iloc[1].time) & (race.Datetime>race_marks.iloc[0].time)]

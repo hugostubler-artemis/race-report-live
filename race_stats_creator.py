@@ -57,7 +57,8 @@ def get_legs(race, marks):
     leg4['TWD_delta'] = np.where(leg4.TWA>0,leg4.TWD-leg4.TWD.mean(),leg4.TWD.mean()-leg4.TWD)
 
     leg1 = compute_targets(leg1, target_up)
-    #st.write(leg1['Tgt_VMG'))
+    st.write(leg1['Tgt_VMG']))
+    st.write(leg1['VMG%']))
     #leg2 = compute_targets(leg1, target_down)
     #leg3 = compute_targets(leg1, target_up)
     #leg4 = compute_targets(leg1, target_down)

@@ -1,4 +1,4 @@
-import streamlit as st 
+.reset_index()import streamlit as st 
 from influx_loader import QueryInfluxData, INFLUXDB_BUCKET_RT
 from pdf_creator import pdf_race_recap_creator, create_pdf
 import os
@@ -39,7 +39,7 @@ if t:
         h_m = [int(coord) for coord in t.split(':')]
         new_datetime = datetime(timing.year, timing.month, timing.day, h_m[0], h_m[1], 0, tzinfo=pytz.utc)
         st.session_state[f'timestamp{index}'] = new_datetime
-        st.write(f"Timestamp {index}: {st.session_state[f'timestamp{index}']}")
+        #st.write(f"Timestamp {index}: {st.session_state[f'timestamp{index}']}")
     except ValueError:
             st.error("Please enter the time in the correct format (HH:MM).")
 
@@ -78,7 +78,7 @@ if st.button('Finish line'):
             marks.loc[1, 'time'] = st.session_state['timestamp3']
             marks.loc[2, 'time'] = st.session_state['timestamp4']
             
-            st.write(marks)
+            #st.write(marks)
             date: str = st.session_state['timestamp1'].strftime('%Y-%m-%d')
             fromTime_: str = (st.session_state['timestamp1'] - timedelta(seconds=100)).replace(tzinfo=None).strftime('%H:%M:%S')
             toTime_: str = st.session_state['timestamp5'].strftime('%H:%M:%S')
@@ -98,7 +98,7 @@ if st.button('Finish line'):
             pre_start = data[data.Datetime<=st.session_state['timestamp1']]
             #
             # file_path = pdf_race_recap_creator(race,pre_start, marks,'race stats')
-            st.write(race.Datetime)
+            #st.write(race.Datetime)
 
             title = f"{start_time}_race_recap_pdf"
             pdf_buffer = BytesIO()

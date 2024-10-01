@@ -56,10 +56,10 @@ def get_legs(race, marks):
     leg3['TWD_delta'] = np.where(leg3.TWA>0,leg3.TWD-leg3.TWD.mean(),leg3.TWD.mean()-leg3.TWD)
     leg4['TWD_delta'] = np.where(leg4.TWA>0,leg4.TWD-leg4.TWD.mean(),leg4.TWD.mean()-leg4.TWD)
 
-    leg1 = compute_targets(leg1, target_up)
-    leg2 = compute_targets(leg1, target_down)
-    leg3 = compute_targets(leg1, target_up)
-    leg4 = compute_targets(leg1, target_down)
+    #leg1 = compute_targets(leg1, target_up)
+    #leg2 = compute_targets(leg1, target_down)
+    #leg3 = compute_targets(leg1, target_up)
+    #leg4 = compute_targets(leg1, target_down)
     return leg1, leg2, leg3, leg4
 
 def cross_product_sign(lat1, lon1, lat2, lon2, boat_lat, boat_lon):

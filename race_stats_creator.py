@@ -59,9 +59,9 @@ def get_legs(race, marks):
     leg1 = compute_targets(leg1, target_up)
     #st.write(leg1['Tgt_VMG'])
     #st.write(leg1['VMG%'])
-    leg2 = compute_targets(leg1, target_down)
-    leg3 = compute_targets(leg1, target_up)
-    leg4 = compute_targets(leg1, target_down)
+    leg2 = compute_targets(leg2, target_down)
+    leg3 = compute_targets(leg3, target_up)
+    leg4 = compute_targets(leg4, target_down)
     return leg1, leg2, leg3, leg4
 
 def cross_product_sign(lat1, lon1, lat2, lon2, boat_lat, boat_lon):

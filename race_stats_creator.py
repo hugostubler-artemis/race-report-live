@@ -175,7 +175,7 @@ def get_recap_table_leg(leg):
         leg['Heel'] = np.where(leg.TWA>0,leg['Heel'], -leg['Heel'])
         recap_table = pd.DataFrame()
         recap_table.loc[f'{leg_num}','VMG%'] = leg['VMG%'].mean() #[leg['VMG%']>0]
-        recap_table.loc[f'{leg_num}','delta_BSP'] = (leg.reset_index()['BSP'].rolling(10).max() - leg.reset_index()['BSP'].rolling(10).min())
+        recap_table.loc[f'{leg_num}','delta_BSP'] = (leg['BSP'].rolling('10s').max() - leg['BSP'].rolling('10s').min())
         recap_table.loc[f'{leg_num}','TWA'] = leg['TWA'].abs().mean()
         # st.write(leg.Heel)
         recap_table.loc[f'{leg_num}','Heel'] = leg['Heel'].mean() 

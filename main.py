@@ -98,6 +98,7 @@ if st.button('Finish line'):
             pre_start = data[data.Datetime<=st.session_state['timestamp1']]
             #
             # file_path = pdf_race_recap_creator(race,pre_start, marks,'race stats')
+            st.write(race.Datetime)
 
             title = f"{start_time}_race_recap_pdf"
             pdf_buffer = BytesIO()

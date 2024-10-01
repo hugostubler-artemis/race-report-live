@@ -138,7 +138,7 @@ def pdf_race_recap_creator(race, marks, pdf_buffer):
     leg1, leg2, leg3, leg4 = get_legs(race, marks)
     r = get_race_recap(race, marks).round(2)
     s = get_start_recap(race, marks).round(2)
-    st.write(s)
+    # st.write(s)
     
     fig, ax = plt.subplots(figsize=(10, 1.4))  
 
